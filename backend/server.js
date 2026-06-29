@@ -22,7 +22,13 @@ if (process.env.NODE_ENV === 'development') {
   app.use(morgan('dev'));
 }
 
-app.use(cors());
+app.use(cors({
+  origin: [
+    'http://localhost:5173',
+    'https://blogplatform-rust.vercel.app', // update after you get vercel URL
+  ],
+  credentials: true,
+}));
 app.use(express.json());
 app.use(cookieParser());
 
