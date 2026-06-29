@@ -6,33 +6,24 @@ import cookieParser from 'cookie-parser';
 import connectDB from './config/db.js';
 import errorHandler from './middleware/errorHandler.js';
 
-// Route imports
 import authRoutes from './routes/auth.js';
 import postRoutes from './routes/posts.js';
 import commentRoutes from './routes/comments.js';
 import userRoutes from './routes/users.js';
 
 dotenv.config();
-
 connectDB();
 
 const app = express();
+
+app.use(cors({ origin: '*' }));
+app.use(express.json());
+app.use(cookieParser());
 
 if (process.env.NODE_ENV === 'development') {
   app.use(morgan('dev'));
 }
 
-app.use(cors({
-  origin: [
-
-    'https://blogplatform-rust.vercel.app/', // update after you get vercel URL
-  ],
-  credentials: true,
-}));
-app.use(express.json());
-app.use(cookieParser());
-
-// Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/posts', postRoutes);
 app.use('/api/comments', commentRoutes);
@@ -47,5 +38,5 @@ app.use(errorHandler);
 const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {
-  console.log(`Server running in ${process.env.NODE_ENV} mode on port ${PORT}`);
+  console.log(`Server running on port ${PORT}`);
 });
