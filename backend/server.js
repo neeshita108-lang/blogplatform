@@ -23,8 +23,7 @@ if (process.env.NODE_ENV === 'development') {
 }
 
 app.use(cors({
-  origin: '*',
-  credentials: false,
+  origin: '*'
 }));
 app.use(express.json());
 app.use(cookieParser());
