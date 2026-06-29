@@ -1,33 +1,22 @@
 import User from '../models/User.js';
 
-// @desc    Get user profile by ID
-// @route   GET /api/users/:id
 export const getUserById = async (req, res) => {
-  const user = await User.findById(req.params.id).select('-password');
-  if (user) {
-    res.json(user);
-  } else {
-    res.status(404);
-    throw new Error('User not found');
-  }
+  try {
+    const user = await User.findById(req.params.id).select('-password');
+    if (user) { res.json(user); } 
+    else { res.status(404).json({ message: 'User not found' }); }
+  } catch (error) { res.status(500).json({ message: error.message }); }
 };
 
-// @desc    Update user profile
-// @route   PUT /api/users/profile
 export const updateUserProfile = async (req, res) => {
-  const user = await User.findById(req.user._id);
-
-  if (user) {
-    user.name = req.body.name || user.name;
-    user.email = req.body.email || user.email;
-    user.avatar = req.body.avatar || user.avatar;
-    user.bio = req.body.bio || user.bio;
-    if (req.body.password) {
-      user.password = req.body.password;
-    }
-
-    const updatedUser = await user.save();
-
+  try {
+    console.log('UPDATE CALLED - using findByIdAndUpdate');
+    const updatedUser = await User.findByIdAndUpdate(
+      req.user._id,
+      { $set: { name: req.body.name, avatar: req.body.avatar, bio: req.body.bio } },
+      { new: true }
+    ).select('-password');
+    if (!updatedUser) return res.status(404).json({ message: 'User not found' });
     res.json({
       _id: updatedUser._id,
       name: updatedUser.name,
@@ -35,16 +24,17 @@ export const updateUserProfile = async (req, res) => {
       avatar: updatedUser.avatar,
       bio: updatedUser.bio,
       role: updatedUser.role,
+      token: req.headers.authorization.split(' ')[1],
     });
-  } else {
-    res.status(404);
-    throw new Error('User not found');
+  } catch (error) {
+    console.error('Update profile error:', error);
+    res.status(500).json({ message: error.message });
   }
 };
 
-// @desc    Get all users (Admin only)
-// @route   GET /api/users
 export const getUsers = async (req, res) => {
-  const users = await User.find({});
-  res.json(users);
+  try {
+    const users = await User.find({}).select('-password');
+    res.json(users);
+  } catch (error) { res.status(500).json({ message: error.message }); }
 };
