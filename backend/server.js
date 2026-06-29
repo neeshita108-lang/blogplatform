@@ -23,19 +23,8 @@ if (process.env.NODE_ENV === 'development') {
 }
 
 app.use(cors({
-  origin: function (origin, callback) {
-    const allowedOrigins = [
-      'http://localhost:5173',
-      'https://blogplatform-rust.vercel.app',
-      'https://blogplatform-smo0hyk52-neeshita-prajapati-s-projects.vercel.app',
-    ];
-    if (!origin || allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      callback(new Error('Not allowed by CORS'));
-    }
-  },
-  credentials: true,
+  origin: '*',
+  credentials: false,
 }));
 app.use(express.json());
 app.use(cookieParser());
